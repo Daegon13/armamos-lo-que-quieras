@@ -42,6 +42,8 @@ npm run dev
 ## Deploy
 - `main` despliega a producción en Vercel
 - cada branch `patch/*` genera preview deployment
+- la versión de Node se fija en `package.json` (`engines.node: 22.x`)
+- en Vercel Project Settings, mantener Node.js en major `22` para evitar warnings de override
 - no modificar Build Command / Output Directory salvo necesidad real
 
 ## Variables de entorno
