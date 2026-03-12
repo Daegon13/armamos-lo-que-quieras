@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { businessInfo } from "@/lib/site";
 
 export function HeroSection() {
@@ -13,18 +14,18 @@ export function HeroSection() {
           sitio, lista para crecer en próximos patches.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <a
-            href="#contacto"
+          <Link
+            href="/agenda"
             className="inline-flex items-center justify-center rounded-md bg-slate-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-700"
           >
-            Solicitar armado
-          </a>
-          <a
-            href="#servicio"
+            Reservar horario
+          </Link>
+          <Link
+            href="/servicios"
             className="inline-flex items-center justify-center rounded-md border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-white"
           >
-            Ver alcance del servicio
-          </a>
+            Ver servicios
+          </Link>
         </div>
       </div>
     </section>
