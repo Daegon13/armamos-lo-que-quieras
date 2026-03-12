@@ -1,0 +1,32 @@
+import { businessInfo } from "@/lib/site";
+
+export function HeroSection() {
+  return (
+    <section id="inicio" className="border-b border-slate-200 bg-slate-50">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Servicio profesional</p>
+        <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+          {businessInfo.brand}
+        </h1>
+        <p className="max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          Armado prolijo, puntual y confiable para muebles de hogar y oficina. Esta es una base inicial del
+          sitio, lista para crecer en próximos patches.
+        </p>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <a
+            href="#contacto"
+            className="inline-flex items-center justify-center rounded-md bg-slate-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+          >
+            Solicitar armado
+          </a>
+          <a
+            href="#servicio"
+            className="inline-flex items-center justify-center rounded-md border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-white"
+          >
+            Ver alcance del servicio
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
