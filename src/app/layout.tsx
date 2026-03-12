@@ -34,9 +34,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="bg-slate-100 text-slate-900 antialiased">
+        <a href="#main-content" className="skip-link">Saltar al contenido</a>
         <div className="flex min-h-screen flex-col">
           <Header />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">{children}</main>
           <Footer />
         </div>
         <WhatsAppFloatingButton />

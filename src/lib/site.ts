@@ -13,3 +13,5 @@ export const navItems: NavItem[] = [
   { label: "Servicio", href: "#servicio" },
   { label: "Contacto", href: "#contacto" },
 ];
+
+export const whatsappPlaceholderHref = "#contacto";
