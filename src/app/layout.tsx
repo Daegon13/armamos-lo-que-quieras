@@ -1,17 +1,29 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { businessInfo } from "@/lib/site";
 import { WhatsAppFloatingButton } from "@/components/ui/WhatsAppFloatingButton";
 import "./globals.css";
 
+const siteUrl = "https://armamosloquequieras.com";
+
 export const metadata: Metadata = {
   title: {
-    default: "Armamos lo que quieras",
-    template: "%s | Armamos lo que quieras",
+    default: businessInfo.brand,
+    template: `%s | ${businessInfo.brand}`,
   },
   description:
     "Servicio profesional de armado de muebles para hogar y oficina. Base comercial lista para iterar.",
-  metadataBase: new URL("https://armamosloquequieras.com"),
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    title: businessInfo.brand,
+    description:
+      "Servicio profesional de armado de muebles para hogar y oficina. Atención confiable y comercial.",
+    url: siteUrl,
+    siteName: businessInfo.brand,
+    locale: "es_AR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
