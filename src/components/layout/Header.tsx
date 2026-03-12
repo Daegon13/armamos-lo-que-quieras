@@ -20,18 +20,22 @@ export function Header() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, []);
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
       <div className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="text-sm font-semibold tracking-tight text-slate-900" onClick={() => setIsMenuOpen(false)}>
+          <Link href="/" className="text-sm font-semibold tracking-tight text-slate-900" onClick={closeMenu}>
             {businessInfo.brand}
           </Link>
 
           <nav aria-label="Navegación principal" className="hidden items-center gap-6 md:flex">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
+                  className={
+                    isActive
+                      ? "text-sm font-medium text-slate-900 transition-colors"
+                      : "text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
+                  }
                 href={item.href}
                 className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
               >
@@ -79,15 +83,15 @@ export function Header() {
         {isMenuOpen ? (
           <div id="mobile-main-menu" className="mt-3 space-y-2 border-t border-slate-200 pt-3 md:hidden">
             <nav aria-label="Navegación móvil" className="flex flex-col gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-md px-2 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                    onClick={closeMenu}
+                    className={
+                        ? "rounded-md bg-slate-100 px-2 py-2 text-sm font-medium text-slate-900 transition-colors"
+                        : "rounded-md px-2 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                    }
             <Link
               href="/agenda"
               className="inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
             >
               Reservar horario
             </Link>
