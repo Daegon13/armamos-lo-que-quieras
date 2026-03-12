@@ -8,6 +8,12 @@ export function Footer() {
         <section>
           <p className="text-base font-semibold text-slate-900">{businessInfo.brand}</p>
           <p className="mt-2 max-w-xs leading-relaxed">{businessInfo.tagline}</p>
+          <Link
+            href="/agenda"
+            className="mt-4 inline-flex rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-slate-700"
+          >
+            Reservar horario
+          </Link>
         </section>
 
         <nav aria-label="Navegación del pie de página">
@@ -27,7 +33,7 @@ export function Footer() {
           <p className="font-semibold text-slate-900">Contacto</p>
           <ul className="mt-3 space-y-2">
             <li>WhatsApp: {businessInfo.phoneDisplay}</li>
-            <li>Email: contacto@armamosloquequieras.com</li>
+            <li>Email: {businessInfo.emailDisplay}</li>
             <li>Zona de cobertura: {businessInfo.serviceArea}</li>
           </ul>
         </section>

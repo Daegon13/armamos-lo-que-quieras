@@ -1,12 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { businessInfo, navItems } from "@/lib/site";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
       <div className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
@@ -71,6 +84,13 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className="rounded-md px-2 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            <Link
+              href="/agenda"
+              className="inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Reservar horario
+            </Link>
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}

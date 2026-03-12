@@ -8,5 +8,6 @@ export type BusinessInfo = {
   tagline: string;
   phoneDisplay: string;
   whatsappNumber: string;
+  emailDisplay: string;
   serviceArea: string;
 };
