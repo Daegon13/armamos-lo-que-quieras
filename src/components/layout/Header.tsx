@@ -4,45 +4,47 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { businessInfo, navItems } from "@/lib/site";
 
+const desktopLinkClass =
+  "text-sm font-medium text-slate-600 transition-colors hover:text-slate-900";
+const desktopLinkActiveClass = "text-sm font-medium text-slate-900 transition-colors";
+const mobileLinkClass =
+  "rounded-md px-2 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900";
+const mobileLinkActiveClass =
+  "rounded-md bg-slate-100 px-2 py-2 text-sm font-medium text-slate-900 transition-colors";
+
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const closeMenu = () => setIsMenuOpen(false);
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsMenuOpen(false);
+        closeMenu();
       }
     };
 
     window.addEventListener("keydown", closeOnEscape);
-
-    return () => {
-      window.removeEventListener("keydown", closeOnEscape);
-    };
+    return () => window.removeEventListener("keydown", closeOnEscape);
   }, []);
-  const closeMenu = () => setIsMenuOpen(false);
-
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
       <div className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/" className="text-sm font-semibold tracking-tight text-slate-900" onClick={closeMenu}>
+          <Link
+            href="/"
+            className="text-sm font-semibold tracking-tight text-slate-900"
+            onClick={closeMenu}
+          >
             {businessInfo.brand}
           </Link>
 
           <nav aria-label="Navegación principal" className="hidden items-center gap-6 md:flex">
-                  className={
-                    isActive
-                      ? "text-sm font-medium text-slate-900 transition-colors"
-                      : "text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
-                  }
-                href={item.href}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+                  className={isActive ? desktopLinkActiveClass : desktopLinkClass}
+        {isMenuOpen && (
+                    className={isActive ? mobileLinkActiveClass : mobileLinkClass}
+
+        )}
 
           <div className="flex items-center gap-2">
             <Link
