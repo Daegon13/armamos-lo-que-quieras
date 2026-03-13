@@ -80,6 +80,7 @@ export default function AgendaPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const minDate = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   const { isLoading, slots, error: availabilityError } = useAgendaAvailability(formValues.preferredDate);
 
@@ -122,6 +123,7 @@ export default function AgendaPage() {
     setSuccessMessage(
       "Recibimos tu solicitud. El horario elegido queda sujeto a confirmación según la disponibilidad operativa.",
     );
+    setFormValues(INITIAL_VALUES);
   };
 
   return (
@@ -139,6 +141,7 @@ export default function AgendaPage() {
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
             <Field
+              id="fullName"
               label="Nombre completo"
               value={formValues.fullName}
               error={errors.fullName}
@@ -147,6 +150,7 @@ export default function AgendaPage() {
             />
 
             <Field
+              id="phone"
               label="Teléfono"
               value={formValues.phone}
               error={errors.phone}
@@ -185,7 +189,7 @@ export default function AgendaPage() {
                 value={formValues.preferredDate}
                 onChange={(event) => handleChange("preferredDate", event.target.value)}
                 className="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
-                min={new Date().toISOString().split("T")[0]}
+                min={minDate}
               />
               {errors.preferredDate && <p className="mt-1 text-xs text-rose-600">{errors.preferredDate}</p>}
             </div>
@@ -244,6 +248,7 @@ export default function AgendaPage() {
             </div>
 
             <Field
+              id="address"
               label="Dirección del domicilio"
               value={formValues.address}
               error={errors.address}
@@ -252,6 +257,7 @@ export default function AgendaPage() {
             />
 
             <Field
+              id="neighborhood"
               label="Barrio / zona"
               value={formValues.neighborhood}
               error={errors.neighborhood}
@@ -282,7 +288,10 @@ export default function AgendaPage() {
             </button>
 
             {successMessage && (
-              <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+              <p
+                className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+                aria-live="polite"
+              >
                 {successMessage}
               </p>
             )}
@@ -294,6 +303,7 @@ export default function AgendaPage() {
 }
 
 type FieldProps = {
+  id: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -302,9 +312,7 @@ type FieldProps = {
   inputMode?: "text" | "tel" | "email" | "url" | "numeric" | "decimal" | "search";
 };
 
-function Field({ label, value, onChange, error, autoComplete, inputMode = "text" }: FieldProps) {
-  const id = label.replace(/\s+/g, "-").toLowerCase();
-
+function Field({ id, label, value, onChange, error, autoComplete, inputMode = "text" }: FieldProps) {
   return (
     <div>
       <label htmlFor={id} className="mb-1 block text-sm font-medium text-slate-700">
