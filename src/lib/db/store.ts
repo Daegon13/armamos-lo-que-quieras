@@ -8,7 +8,7 @@ type BookingStore = {
   findServiceByName: (name: string) => Promise<Service | undefined>;
   listBookingsByDate: (date: string) => Promise<Booking[]>;
   listAdminBlocksByDate: (date: string) => Promise<AdminBlock[]>;
-  createPendingBooking: (input: CreateBookingInput, service: Service) => Promise<Booking>;
+  createPendingBooking: (input: CreateBookingInput, service: Service, now: Date) => Promise<Booking>;
 };
 
 type MemoryState = {
@@ -45,8 +45,31 @@ function createMemoryStore(): BookingStore {
     async listAdminBlocksByDate(date: string) {
       return getMemoryState().adminBlocks.filter((block) => block.date === date);
     },
-    async createPendingBooking(input, service) {
-      const now = new Date();
+    async createPendingBooking(input, service, now) {
+      const conflictingBooking = getMemoryState().bookings.find((booking) => {
+        if (booking.date !== input.preferredDate || booking.time !== input.preferredTime) {
+          return false;
+        }
+
+        if (booking.status === "confirmed") {
+          return true;
+        }
+
+        if (booking.status !== "pending") {
+          return false;
+        }
+
+        if (!booking.holdUntil) {
+          return true;
+        }
+
+        return new Date(booking.holdUntil).getTime() > now.getTime();
+      });
+
+      if (conflictingBooking) {
+        throw new Error("El horario seleccionado ya no está disponible.");
+      }
+
       const holdUntil = new Date(now.getTime() + HOLD_MINUTES * 60_000).toISOString();
       const booking: Booking = {
         id: randomUUID(),
