@@ -146,7 +146,7 @@ export async function createPendingBooking(input: CreateBookingInput) {
       throw new Error("El horario seleccionado ya no está disponible.");
     }
 
-    return store.createPendingBooking(input, service);
+    return store.createPendingBooking(input, service, new Date());
   });
 }
 

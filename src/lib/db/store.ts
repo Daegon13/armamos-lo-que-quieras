@@ -1,15 +1,9 @@
 import { randomUUID } from "crypto";
 import { HOLD_MINUTES } from "@/lib/booking/constants";
-import type { AdminBlock, Booking, CreateBookingInput, Service } from "@/lib/booking/types";
+import type { BookingStore } from "@/lib/db/types";
+import type { AdminBlock, Booking, Service } from "@/lib/booking/types";
 import { INITIAL_SERVICES } from "@/lib/services/catalog";
-
-type BookingStore = {
-  listServices: () => Promise<Service[]>;
-  findServiceByName: (name: string) => Promise<Service | undefined>;
-  listBookingsByDate: (date: string) => Promise<Booking[]>;
-  listAdminBlocksByDate: (date: string) => Promise<AdminBlock[]>;
-  createPendingBooking: (input: CreateBookingInput, service: Service) => Promise<Booking>;
-};
+import { createPostgresStore } from "@/lib/db/postgres";
 
 type MemoryState = {
   services: Service[];
@@ -45,8 +39,31 @@ function createMemoryStore(): BookingStore {
     async listAdminBlocksByDate(date: string) {
       return getMemoryState().adminBlocks.filter((block) => block.date === date);
     },
-    async createPendingBooking(input, service) {
-      const now = new Date();
+    async createPendingBooking(input, service, now) {
+      const conflictingBooking = getMemoryState().bookings.find((booking) => {
+        if (booking.date !== input.preferredDate || booking.time !== input.preferredTime) {
+          return false;
+        }
+
+        if (booking.status === "confirmed") {
+          return true;
+        }
+
+        if (booking.status !== "pending") {
+          return false;
+        }
+
+        if (!booking.holdUntil) {
+          return true;
+        }
+
+        return new Date(booking.holdUntil).getTime() > now.getTime();
+      });
+
+      if (conflictingBooking) {
+        throw new Error("El horario seleccionado ya no está disponible.");
+      }
+
       const holdUntil = new Date(now.getTime() + HOLD_MINUTES * 60_000).toISOString();
       const booking: Booking = {
         id: randomUUID(),
@@ -70,13 +87,11 @@ function createMemoryStore(): BookingStore {
   };
 }
 
-function createPostgresStore(): BookingStore {
-  // Placeholder intencional: cuando DATABASE_URL exista, este módulo puede migrar
-  // a un repositorio real Postgres sin cambiar la capa de dominio.
-  return createMemoryStore();
-}
+const memoryStore = createMemoryStore();
 
-const store = process.env.DATABASE_URL ? createPostgresStore() : createMemoryStore();
+const store = process.env.DATABASE_URL
+  ? createPostgresStore({ fallbackStore: memoryStore })
+  : memoryStore;
 
 export function getBookingStore(): BookingStore {
   return store;
