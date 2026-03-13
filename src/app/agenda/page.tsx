@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useAgendaAvailability } from "@/hooks/useAgendaAvailability";
 
-const SERVICE_OPTIONS = [
+const FALLBACK_SERVICE_OPTIONS = [
   "Armado de muebles",
   "Instalación / colocación",
   "Desarme y rearmado",
@@ -23,6 +23,11 @@ type FormValues = {
 };
 
 type FormErrors = Partial<Record<keyof FormValues, string>>;
+
+type ApiService = {
+  id: string;
+  name: string;
+};
 
 const INITIAL_VALUES: FormValues = {
   fullName: "",
@@ -80,11 +85,43 @@ export default function AgendaPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [serviceOptions, setServiceOptions] = useState<string[]>([...FALLBACK_SERVICE_OPTIONS]);
+
   const minDate = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   const { isLoading, slots, error: availabilityError } = useAgendaAvailability(formValues.preferredDate);
 
   const availableSlots = useMemo(() => slots.filter((slot) => slot.available), [slots]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadServices() {
+      try {
+        const response = await fetch("/api/services", { cache: "no-store" });
+
+        if (!response.ok || !mounted) {
+          return;
+        }
+
+        const data = (await response.json()) as { services?: ApiService[] };
+        const names = data.services?.map((service) => service.name).filter(Boolean);
+
+        if (names && names.length > 0) {
+          setServiceOptions(names);
+        }
+      } catch {
+        // fallback silencioso al catálogo local.
+      }
+    }
+
+    loadServices();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleChange = (field: keyof FormValues, value: string) => {
     setFormValues((prev) => ({
@@ -100,6 +137,7 @@ export default function AgendaPage() {
     }));
 
     setSuccessMessage(null);
+    setSubmitError(null);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -110,20 +148,39 @@ export default function AgendaPage() {
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       setSuccessMessage(null);
+      setSubmitError(null);
       return;
     }
 
     setIsSubmitting(true);
     setSuccessMessage(null);
+    setSubmitError(null);
 
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    try {
+      const response = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formValues),
+      });
 
-    setIsSubmitting(false);
-    setErrors({});
-    setSuccessMessage(
-      "Recibimos tu solicitud. El horario elegido queda sujeto a confirmación según la disponibilidad operativa.",
-    );
-    setFormValues(INITIAL_VALUES);
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setSubmitError(data.error ?? "No pudimos registrar tu solicitud. Intentá nuevamente.");
+        return;
+      }
+
+      setErrors({});
+      setSuccessMessage(
+        "Recibimos tu solicitud. El horario elegido quedó en estado pendiente y sujeto a confirmación operativa.",
+      );
+      setFormValues(INITIAL_VALUES);
+    } catch {
+      setSubmitError("No pudimos registrar tu solicitud. Revisá tu conexión e intentá nuevamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -170,7 +227,7 @@ export default function AgendaPage() {
                 className="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="">Seleccioná una opción</option>
-                {SERVICE_OPTIONS.map((service) => (
+                {serviceOptions.map((service) => (
                   <option key={service} value={service}>
                     {service}
                   </option>
@@ -286,6 +343,12 @@ export default function AgendaPage() {
             >
               {isSubmitting ? "Enviando solicitud..." : "Solicitar agenda"}
             </button>
+
+            {submitError && (
+              <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700" aria-live="polite">
+                {submitError}
+              </p>
+            )}
 
             {successMessage && (
               <p
