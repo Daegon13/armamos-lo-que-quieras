@@ -36,9 +36,21 @@ export async function POST(request: Request) {
     }
 
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message, code: "UNKNOWN_ERROR" }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: "No pudimos procesar la solicitud en este momento. Intentá nuevamente en unos minutos.",
+          code: "BACKEND_UNAVAILABLE",
+        },
+        { status: 503 },
+      );
     }
 
-    return NextResponse.json({ error: "No se pudo crear la solicitud.", code: "UNKNOWN_ERROR" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "No pudimos procesar la solicitud en este momento. Intentá nuevamente en unos minutos.",
+        code: "BACKEND_UNAVAILABLE",
+      },
+      { status: 503 },
+    );
   }
 }

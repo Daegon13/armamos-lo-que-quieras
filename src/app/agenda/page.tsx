@@ -219,6 +219,11 @@ export default function AgendaPage() {
           return;
         }
 
+        if (data.code === "BACKEND_UNAVAILABLE") {
+          setSubmitError("Backend no disponible en este momento. Intentá nuevamente en unos minutos.");
+          return;
+        }
+
         setSubmitError("No pudimos completar la solicitud en este momento. Intentá nuevamente en unos minutos.");
         return;
       }

@@ -15,7 +15,7 @@ export class BookingRequestError extends Error {
   constructor(
     message: string,
     public readonly status: number,
-    public readonly code: "VALIDATION_ERROR" | "SLOT_UNAVAILABLE",
+    public readonly code: "VALIDATION_ERROR" | "SLOT_UNAVAILABLE" | "BACKEND_UNAVAILABLE",
   ) {
     super(message);
   }
@@ -160,8 +160,16 @@ export async function createPendingBooking(input: CreateBookingInput) {
 
     try {
       booking = await store.createPendingBooking(input, service, new Date());
-    } catch {
-      throw new BookingRequestError("El horario seleccionado ya no está disponible.", 409, "SLOT_UNAVAILABLE");
+    } catch (error) {
+      if (error instanceof Error && error.message === "El horario seleccionado ya no está disponible.") {
+        throw new BookingRequestError("El horario seleccionado ya no está disponible.", 409, "SLOT_UNAVAILABLE");
+      }
+
+      throw new BookingRequestError(
+        "No pudimos procesar la solicitud en este momento. Intentá nuevamente en unos minutos.",
+        503,
+        "BACKEND_UNAVAILABLE",
+      );
     }
 
     return { booking, service };
