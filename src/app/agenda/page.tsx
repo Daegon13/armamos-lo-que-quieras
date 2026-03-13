@@ -29,6 +29,23 @@ type ApiService = {
   name: string;
 };
 
+type BookingResponse = {
+  booking: {
+    id: string;
+    fullName: string;
+    phone: string;
+    service: string;
+    date: string;
+    time: string;
+    address: string;
+    neighborhood: string;
+    details: string;
+    status: "pending" | "confirmed" | "cancelled";
+    holdUntil: string | null;
+  };
+  whatsappUrl: string;
+};
+
 const INITIAL_VALUES: FormValues = {
   fullName: "",
   phone: "",
@@ -87,6 +104,7 @@ export default function AgendaPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [serviceOptions, setServiceOptions] = useState<string[]>([...FALLBACK_SERVICE_OPTIONS]);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
   const minDate = useMemo(() => {
     const now = new Date();
@@ -130,6 +148,20 @@ export default function AgendaPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!whatsappUrl) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      window.location.assign(whatsappUrl);
+    }, 1200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [whatsappUrl]);
+
   const handleChange = (field: keyof FormValues, value: string) => {
     setFormValues((prev) => ({
       ...prev,
@@ -145,6 +177,7 @@ export default function AgendaPage() {
 
     setSuccessMessage(null);
     setSubmitError(null);
+    setWhatsappUrl(null);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -162,6 +195,7 @@ export default function AgendaPage() {
     setIsSubmitting(true);
     setSuccessMessage(null);
     setSubmitError(null);
+    setWhatsappUrl(null);
 
     try {
       const response = await fetch("/api/bookings", {
@@ -173,18 +207,32 @@ export default function AgendaPage() {
       });
 
       if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        setSubmitError(data.error ?? "No pudimos registrar tu solicitud. Intentá nuevamente.");
+        const data = (await response.json()) as { error?: string; code?: string };
+
+        if (data.code === "SLOT_UNAVAILABLE") {
+          setSubmitError("Ese horario acaba de tomarse. Elegí otro bloque y volvé a intentar.");
+          return;
+        }
+
+        if (data.code === "VALIDATION_ERROR") {
+          setSubmitError(data.error ?? "Revisá los datos del formulario y volvé a intentar.");
+          return;
+        }
+
+        setSubmitError("No pudimos completar la solicitud en este momento. Intentá nuevamente en unos minutos.");
         return;
       }
 
+      const data = (await response.json()) as BookingResponse;
+
       setErrors({});
       setSuccessMessage(
-        "Recibimos tu solicitud. El horario elegido quedó en estado pendiente y sujeto a confirmación operativa.",
+        "Horario reservado provisoriamente. Completá el envío por WhatsApp para continuar. La solicitud queda sujeta a confirmación.",
       );
+      setWhatsappUrl(data.whatsappUrl);
       setFormValues(INITIAL_VALUES);
     } catch {
-      setSubmitError("No pudimos registrar tu solicitud. Revisá tu conexión e intentá nuevamente.");
+      setSubmitError("Backend no disponible en este momento. Revisá tu conexión e intentá nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -200,7 +248,7 @@ export default function AgendaPage() {
             Completá este formulario y coordinamos la mejor opción para resolver tu trabajo a domicilio.
           </p>
           <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            Todas las solicitudes quedan sujetas a confirmación final.
+            La solicitud queda sujeta a confirmación final.
           </p>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
@@ -358,12 +406,23 @@ export default function AgendaPage() {
             )}
 
             {successMessage && (
-              <p
-                className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+              <div
+                className="space-y-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-700"
                 aria-live="polite"
               >
-                {successMessage}
-              </p>
+                <p className="font-semibold">Horario reservado provisoriamente.</p>
+                <p>Completá el envío por WhatsApp para continuar.</p>
+                <p>La solicitud queda sujeta a confirmación.</p>
+                {whatsappUrl && (
+                  <a
+                    href={whatsappUrl}
+                    className="inline-flex rounded-md bg-emerald-700 px-3 py-2 text-xs font-semibold text-white"
+                  >
+                    Abrir WhatsApp ahora
+                  </a>
+                )}
+                <p className="text-xs">Si no se abre automáticamente, tocá el botón.</p>
+              </div>
             )}
           </form>
         </div>
