@@ -7,7 +7,7 @@ export function CoverageSection() {
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Cobertura</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-            Atención en {businessInfo.serviceArea}
+            Atención en {businessInfo.contact.city}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
             Coordinamos visitas para hogar y oficina con comunicación clara y tiempos realistas.
@@ -16,7 +16,7 @@ export function CoverageSection() {
 
         <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
           <p className="text-sm font-medium text-slate-500">Contacto comercial (placeholder)</p>
-          <p className="mt-2 text-lg font-semibold text-slate-900">WhatsApp: {businessInfo.phoneDisplay}</p>
+          <p className="mt-2 text-lg font-semibold text-slate-900">WhatsApp: {businessInfo.contact.phoneDisplay}</p>
           <p className="mt-2 text-sm text-slate-600">
             En próximos patches se integrará el flujo real de contacto y agenda.
           </p>
