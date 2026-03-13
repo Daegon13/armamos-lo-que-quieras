@@ -24,13 +24,13 @@ export function buildBookingWhatsappMessage(booking: Booking, serviceName: strin
     `Nombre: ${booking.customerFullName}`,
     `Teléfono: ${booking.customerPhone}`,
     `Servicio: ${serviceName}`,
-    `Fecha solicitada: ${formatDate(booking.date)}`,
-    `Hora solicitada: ${booking.time}`,
+    `Fecha: ${formatDate(booking.date)}`,
+    `Hora: ${booking.time}`,
     `Dirección: ${booking.address}`,
-    `Barrio/Zona: ${booking.neighborhood}`,
-    `Detalles del trabajo: ${booking.details}`,
+    `Barrio: ${booking.neighborhood}`,
+    `Detalles: ${booking.details}`,
     "",
-    "Quedo a la espera de confirmación. También puedo enviar fotos por este medio.",
+    "Quedo a la espera de confirmación…",
   ].join("\n");
 }
 
