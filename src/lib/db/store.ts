@@ -1,15 +1,9 @@
 import { randomUUID } from "crypto";
 import { HOLD_MINUTES } from "@/lib/booking/constants";
-import type { AdminBlock, Booking, CreateBookingInput, Service } from "@/lib/booking/types";
+import type { BookingStore } from "@/lib/db/types";
+import type { AdminBlock, Booking, Service } from "@/lib/booking/types";
 import { INITIAL_SERVICES } from "@/lib/services/catalog";
-
-type BookingStore = {
-  listServices: () => Promise<Service[]>;
-  findServiceByName: (name: string) => Promise<Service | undefined>;
-  listBookingsByDate: (date: string) => Promise<Booking[]>;
-  listAdminBlocksByDate: (date: string) => Promise<AdminBlock[]>;
-  createPendingBooking: (input: CreateBookingInput, service: Service, now: Date) => Promise<Booking>;
-};
+import { createPostgresStore } from "@/lib/db/postgres";
 
 type MemoryState = {
   services: Service[];
@@ -93,13 +87,11 @@ function createMemoryStore(): BookingStore {
   };
 }
 
-function createPostgresStore(): BookingStore {
-  // Placeholder intencional: cuando DATABASE_URL exista, este módulo puede migrar
-  // a un repositorio real Postgres sin cambiar la capa de dominio.
-  return createMemoryStore();
-}
+const memoryStore = createMemoryStore();
 
-const store = process.env.DATABASE_URL ? createPostgresStore() : createMemoryStore();
+const store = process.env.DATABASE_URL
+  ? createPostgresStore({ fallbackStore: memoryStore })
+  : memoryStore;
 
 export function getBookingStore(): BookingStore {
   return store;

@@ -7,8 +7,9 @@
  * - admin_blocks
  * - settings
  *
- * Restricción clave recomendada en producción:
- * unique(date, time) for bookings where status in ('pending', 'confirmed')
+ * Restricciones recomendadas en producción:
+ * - índice único parcial: unique(date, time) where status in ('pending', 'confirmed')
+ * - creación de pending dentro de transacción para evitar carreras entre lectura/escritura.
  */
 
 export type DbServiceRow = {
