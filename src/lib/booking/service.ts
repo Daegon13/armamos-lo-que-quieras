@@ -11,6 +11,16 @@ import {
 
 const slotLocks = new Map<string, Promise<void>>();
 
+export class BookingRequestError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly code: "VALIDATION_ERROR" | "SLOT_UNAVAILABLE" | "BACKEND_UNAVAILABLE",
+  ) {
+    super(message);
+  }
+}
+
 async function withSlotLock<T>(slotKey: string, operation: () => Promise<T>): Promise<T> {
   const previous = slotLocks.get(slotKey) ?? Promise.resolve();
   let release: () => void;
@@ -126,7 +136,7 @@ export async function createPendingBooking(input: CreateBookingInput) {
   const validationError = validateCreateBookingInput(input);
 
   if (validationError) {
-    throw new Error(validationError);
+    throw new BookingRequestError(validationError, 422, "VALIDATION_ERROR");
   }
 
   const slotKey = `${input.preferredDate}_${input.preferredTime}`;
@@ -136,17 +146,33 @@ export async function createPendingBooking(input: CreateBookingInput) {
     const service = await store.findServiceByName(input.serviceType);
 
     if (!service) {
-      throw new Error("El servicio elegido no existe o no está disponible.");
+      throw new BookingRequestError("El servicio elegido no existe o no está disponible.", 422, "VALIDATION_ERROR");
     }
 
     const availability = await getAvailabilityByDate(input.preferredDate);
     const selectedSlot = availability.find((slot) => slot.value === input.preferredTime);
 
     if (!selectedSlot?.available) {
-      throw new Error("El horario seleccionado ya no está disponible.");
+      throw new BookingRequestError("El horario seleccionado ya no está disponible.", 409, "SLOT_UNAVAILABLE");
     }
 
-    return store.createPendingBooking(input, service, new Date());
+    let booking;
+
+    try {
+      booking = await store.createPendingBooking(input, service, new Date());
+    } catch (error) {
+      if (error instanceof Error && error.message === "El horario seleccionado ya no está disponible.") {
+        throw new BookingRequestError("El horario seleccionado ya no está disponible.", 409, "SLOT_UNAVAILABLE");
+      }
+
+      throw new BookingRequestError(
+        "No pudimos procesar la solicitud en este momento. Intentá nuevamente en unos minutos.",
+        503,
+        "BACKEND_UNAVAILABLE",
+      );
+    }
+
+    return { booking, service };
   });
 }
 

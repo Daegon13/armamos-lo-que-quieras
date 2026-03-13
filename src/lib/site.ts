@@ -1,5 +1,7 @@
 import type { BusinessInfo, NavItem } from "@/types/site";
 
+const configuredWhatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+
 export const navItems: NavItem[] = [
   { label: "Inicio", href: "/" },
   { label: "Servicios", href: "/servicios" },
@@ -17,7 +19,7 @@ export const businessInfo: BusinessInfo = {
   primaryCtaHref: "/agenda",
   contact: {
     phoneDisplay: "+54 9 11 0000-0000",
-    whatsappNumber: "5491100000000",
+    whatsappNumber: configuredWhatsappNumber || "5491100000000",
     email: "hola@armamosloquequieras.com",
     city: "CABA y GBA",
   },
