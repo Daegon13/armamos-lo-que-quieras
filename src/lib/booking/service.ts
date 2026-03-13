@@ -1,6 +1,13 @@
 import { getBookingStore } from "@/lib/db/store";
-import type { AvailabilitySlot, CreateBookingInput } from "@/lib/booking/types";
-import { buildBaseSlots, isPastDate, isPastSlot, isTimeWithinAgenda, isValidDateInput } from "@/lib/booking/slots";
+import type { AvailabilitySlot, Booking, CreateBookingInput } from "@/lib/booking/types";
+import {
+  buildBaseSlots,
+  isPastDate,
+  isPastSlot,
+  isTimeWithinAgenda,
+  isValidDateInput,
+  toLocalDateString,
+} from "@/lib/booking/slots";
 
 const slotLocks = new Map<string, Promise<void>>();
 
@@ -27,6 +34,22 @@ async function withSlotLock<T>(slotKey: string, operation: () => Promise<T>): Pr
   }
 }
 
+function isBlockingBooking(booking: Booking, now: Date): boolean {
+  if (booking.status === "confirmed") {
+    return true;
+  }
+
+  if (booking.status !== "pending") {
+    return false;
+  }
+
+  if (!booking.holdUntil) {
+    return true;
+  }
+
+  return new Date(booking.holdUntil).getTime() > now.getTime();
+}
+
 export async function getAvailabilityByDate(date: string): Promise<AvailabilitySlot[]> {
   if (!isValidDateInput(date)) {
     throw new Error("INVALID_DATE");
@@ -42,9 +65,7 @@ export async function getAvailabilityByDate(date: string): Promise<AvailabilityS
   const [bookings, blocks] = await Promise.all([store.listBookingsByDate(date), store.listAdminBlocksByDate(date)]);
 
   const unavailableBookingTimes = new Set(
-    bookings
-      .filter((booking) => booking.status === "pending" || booking.status === "confirmed")
-      .map((booking) => booking.time),
+    bookings.filter((booking) => isBlockingBooking(booking, now)).map((booking) => booking.time),
   );
 
   const blockedTimes = new Set(blocks.map((block) => block.time));
@@ -67,7 +88,13 @@ export async function getAvailabilityByDate(date: string): Promise<AvailabilityS
 }
 
 function validateCreateBookingInput(input: CreateBookingInput): string | null {
-  if (!input.fullName.trim() || !input.phone.trim() || !input.address.trim() || !input.neighborhood.trim() || !input.details.trim()) {
+  if (
+    !input.fullName.trim() ||
+    !input.phone.trim() ||
+    !input.address.trim() ||
+    !input.neighborhood.trim() ||
+    !input.details.trim()
+  ) {
     return "Faltan campos obligatorios.";
   }
 
@@ -81,6 +108,15 @@ function validateCreateBookingInput(input: CreateBookingInput): string | null {
 
   if (!input.serviceType.trim()) {
     return "Debés seleccionar un tipo de servicio.";
+  }
+
+  const now = new Date();
+  if (input.preferredDate < toLocalDateString(now)) {
+    return "No se aceptan solicitudes en fechas pasadas.";
+  }
+
+  if (isPastSlot(input.preferredDate, input.preferredTime, now)) {
+    return "No se aceptan solicitudes en horarios pasados.";
   }
 
   return null;

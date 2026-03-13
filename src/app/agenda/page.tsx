@@ -88,7 +88,14 @@ export default function AgendaPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [serviceOptions, setServiceOptions] = useState<string[]>([...FALLBACK_SERVICE_OPTIONS]);
 
-  const minDate = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const minDate = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }, []);
 
   const { isLoading, slots, error: availabilityError } = useAgendaAvailability(formValues.preferredDate);
 

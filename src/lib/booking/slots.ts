@@ -30,7 +30,7 @@ export function buildBaseSlots(): AvailabilitySlot[] {
 }
 
 export function isPastDate(date: string, now = new Date()): boolean {
-  const today = now.toISOString().slice(0, 10);
+  const today = toLocalDateString(now);
   return date < today;
 }
 
@@ -47,4 +47,12 @@ export function isTimeWithinAgenda(time: string): boolean {
   }
 
   return hours >= AGENDA_START_HOUR && hours <= AGENDA_END_HOUR;
+}
+
+export function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
