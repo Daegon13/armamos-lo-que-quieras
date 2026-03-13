@@ -17,7 +17,4 @@ export type BusinessInfo = {
   primaryCtaLabel: string;
   primaryCtaHref: string;
   contact: ContactInfo;
-  phoneDisplay: string;
-  whatsappNumber: string;
-  serviceArea: string;
 };

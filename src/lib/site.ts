@@ -21,9 +21,6 @@ export const businessInfo: BusinessInfo = {
     email: "hola@armamosloquequieras.com",
     city: "CABA y GBA",
   },
-  phoneDisplay: "+54 9 11 0000-0000",
-  whatsappNumber: "5491100000000",
-  serviceArea: "CABA y GBA",
 };
 
 export const whatsappPlaceholderHref = "/contacto";
