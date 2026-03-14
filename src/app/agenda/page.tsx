@@ -57,41 +57,91 @@ const INITIAL_VALUES: FormValues = {
   details: "",
 };
 
+const NAME_REGEX = /^[a-záéíóúüñ\s'.-]+$/i;
+const PHONE_REGEX = /^\+?[\d\s()-]+$/;
+const ADDRESS_REGEX = /^[a-záéíóúüñ\d\s.,#°/-]+$/i;
+const NEIGHBORHOOD_REGEX = /^[a-záéíóúüñ\d\s'.-]+$/i;
+
+function isValidDateValue(value: string): boolean {
+  const parsed = new Date(`${value}T00:00:00`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().startsWith(value);
+}
+
+function getTodayDate(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function validateForm(values: FormValues): FormErrors {
   const errors: FormErrors = {};
+  const fullName = values.fullName.trim();
+  const phone = values.phone.trim();
+  const serviceType = values.serviceType.trim();
+  const address = values.address.trim();
+  const neighborhood = values.neighborhood.trim();
+  const details = values.details.trim();
+  const today = getTodayDate();
 
-  if (!values.fullName.trim()) {
+  if (!fullName) {
     errors.fullName = "Ingresá tu nombre completo.";
+  } else if (fullName.length < 3) {
+    errors.fullName = "Ingresá nombre y apellido para poder contactarte correctamente.";
+  } else if (!NAME_REGEX.test(fullName)) {
+    errors.fullName = "El nombre solo puede contener letras y signos simples (sin emojis).";
   }
 
-  if (!values.phone.trim()) {
+  if (!phone) {
     errors.phone = "Ingresá un teléfono de contacto.";
-  } else if (values.phone.replace(/\D/g, "").length < 8) {
-    errors.phone = "El teléfono parece incompleto.";
+  } else if (!PHONE_REGEX.test(phone)) {
+    errors.phone = "Usá un formato válido. Ejemplo: 11 2345-6789 o +54 11 2345-6789.";
+  } else {
+    const digits = phone.replace(/\D/g, "");
+
+    if (digits.length < 8 || digits.length > 15) {
+      errors.phone = "El teléfono debe tener entre 8 y 15 dígitos.";
+    }
   }
 
-  if (!values.serviceType) {
+  if (!serviceType) {
     errors.serviceType = "Seleccioná el tipo de servicio.";
   }
 
   if (!values.preferredDate) {
     errors.preferredDate = "Elegí una fecha deseada.";
+  } else if (!isValidDateValue(values.preferredDate)) {
+    errors.preferredDate = "La fecha ingresada no es válida.";
+  } else if (values.preferredDate < today) {
+    errors.preferredDate = "No se pueden solicitar turnos para fechas pasadas.";
   }
 
   if (!values.preferredTime) {
-    errors.preferredTime = "Elegí una franja horaria.";
+    errors.preferredTime = "Elegí un horario dentro del rango operativo disponible.";
   }
 
-  if (!values.address.trim()) {
+  if (!address) {
     errors.address = "Ingresá la dirección del domicilio.";
+  } else if (address.length < 6) {
+    errors.address = "La dirección es demasiado corta. Agregá calle y altura.";
+  } else if (!ADDRESS_REGEX.test(address)) {
+    errors.address = "La dirección contiene caracteres no válidos.";
   }
 
-  if (!values.neighborhood.trim()) {
+  if (!neighborhood) {
     errors.neighborhood = "Indicá tu barrio o zona.";
+  } else if (neighborhood.length < 3) {
+    errors.neighborhood = "Ingresá un barrio o zona más específico.";
+  } else if (!NEIGHBORHOOD_REGEX.test(neighborhood)) {
+    errors.neighborhood = "El barrio o zona contiene caracteres no válidos.";
   }
 
-  if (!values.details.trim()) {
+  if (!details) {
     errors.details = "Contanos brevemente qué necesitás resolver.";
+  } else if (details.length < 10) {
+    errors.details = "Agregá un poco más de contexto para evaluar mejor tu solicitud.";
   }
 
   return errors;
@@ -106,18 +156,12 @@ export default function AgendaPage() {
   const [serviceOptions, setServiceOptions] = useState<string[]>([...FALLBACK_SERVICE_OPTIONS]);
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
-  const minDate = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }, []);
+  const minDate = useMemo(() => getTodayDate(), []);
 
   const { isLoading, slots, error: availabilityError } = useAgendaAvailability(formValues.preferredDate);
 
   const availableSlots = useMemo(() => slots.filter((slot) => slot.available), [slots]);
+  const hasSelectedDate = Boolean(formValues.preferredDate);
 
   useEffect(() => {
     let mounted = true;
@@ -256,7 +300,7 @@ export default function AgendaPage() {
             La solicitud queda sujeta a confirmación final.
           </p>
 
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
+          <form className="mt-6 space-y-5 sm:space-y-4" onSubmit={handleSubmit} noValidate>
             <Field
               id="fullName"
               label="Nombre completo"
@@ -314,15 +358,15 @@ export default function AgendaPage() {
             <div>
               <p className="mb-1 block text-sm font-medium text-slate-700">Hora deseada</p>
 
-              {!formValues.preferredDate && (
-                <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+              {!hasSelectedDate && (
+                <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600">
                   Elegí una fecha para ver horarios disponibles entre 08:00 y 21:00.
                 </p>
               )}
 
-              {formValues.preferredDate && isLoading && (
-                <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                  Cargando disponibilidad...
+              {hasSelectedDate && isLoading && (
+                <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600">
+                  Consultando disponibilidad del horario reservado provisoriamente...
                 </p>
               )}
 
@@ -332,14 +376,14 @@ export default function AgendaPage() {
                 </p>
               )}
 
-              {formValues.preferredDate && !isLoading && !availabilityError && availableSlots.length === 0 && (
-                <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                  No hay bloques disponibles para esta fecha por ahora. Probá otra fecha.
+              {hasSelectedDate && !isLoading && !availabilityError && availableSlots.length === 0 && (
+                <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600">
+                  No quedan horarios disponibles para esta fecha. Probá otra para reservar provisoriamente.
                 </p>
               )}
 
-              {formValues.preferredDate && !isLoading && !availabilityError && availableSlots.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {hasSelectedDate && !isLoading && !availabilityError && availableSlots.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {availableSlots.map((slot) => {
                     const isSelected = slot.value === formValues.preferredTime;
 
@@ -348,7 +392,7 @@ export default function AgendaPage() {
                         key={slot.value}
                         type="button"
                         onClick={() => handleChange("preferredTime", slot.value)}
-                        className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`rounded-md border px-3 py-2.5 text-sm font-semibold transition-colors sm:py-2 ${
                           isSelected
                             ? "border-slate-900 bg-slate-900 text-white"
                             : "border-slate-300 bg-white text-slate-700 hover:border-slate-500"
@@ -399,9 +443,9 @@ export default function AgendaPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-md bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="w-full rounded-md bg-slate-900 px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400 sm:py-3 sm:text-sm"
             >
-              {isSubmitting ? "Enviando solicitud..." : "Solicitar agenda"}
+              {isSubmitting ? "Enviando solicitud y reservando horario provisoriamente..." : "Solicitar agenda"}
             </button>
 
             {submitError && (
