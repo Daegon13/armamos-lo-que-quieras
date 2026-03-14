@@ -10,16 +10,14 @@ export function CoverageSection() {
             Atención en {businessInfo.contact.city}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-            Coordinamos visitas para hogar y oficina con comunicación clara y tiempos realistas.
+            Trabajamos por zonas con coordinación previa para asegurar tiempos realistas y atención ordenada.
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-          <p className="text-sm font-medium text-slate-500">Contacto comercial (placeholder)</p>
+          <p className="text-sm font-medium text-slate-500">Canal comercial</p>
           <p className="mt-2 text-lg font-semibold text-slate-900">WhatsApp: {businessInfo.contact.phoneDisplay}</p>
-          <p className="mt-2 text-sm text-slate-600">
-            En próximos patches se integrará el flujo real de contacto y agenda.
-          </p>
+          <p className="mt-2 text-sm text-slate-600">Zonas activas: {businessInfo.coverageZones.join(", ")}.</p>
         </div>
       </div>
     </section>

@@ -2,14 +2,9 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useAgendaAvailability } from "@/hooks/useAgendaAvailability";
+import { businessInfo } from "@/lib/site";
 
-const FALLBACK_SERVICE_OPTIONS = [
-  "Armado de muebles",
-  "Instalación / colocación",
-  "Desarme y rearmado",
-  "Corrección de armado",
-  "Trabajo especial",
-] as const;
+const FALLBACK_SERVICE_OPTIONS = [...businessInfo.serviceHighlights] as const;
 
 type FormValues = {
   fullName: string;
@@ -316,10 +311,13 @@ export default function AgendaPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Reserva tu visita</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">Agenda tu servicio</h1>
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-            Completá este formulario y coordinamos la mejor opción para resolver tu trabajo a domicilio.
+            Completá este formulario y coordinamos la mejor opción para resolver tu trabajo a domicilio en {businessInfo.contact.city}.
           </p>
           <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
             La solicitud queda sujeta a confirmación final.
+          </p>
+          <p className="mt-2 text-xs text-slate-500">
+            Horarios operativos: {businessInfo.operationalHours.map((item) => `${item.days} ${item.hours}`).join(" · ")}.
           </p>
 
           <form className="mt-6 space-y-5 sm:space-y-4" onSubmit={handleSubmit} noValidate>
@@ -382,7 +380,7 @@ export default function AgendaPage() {
 
               {!hasSelectedDate && (
                 <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600">
-                  Elegí una fecha para ver horarios disponibles entre 08:00 y 21:00.
+                  Elegí una fecha para ver horarios disponibles dentro de nuestra franja operativa.
                 </p>
               )}
 

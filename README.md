@@ -47,7 +47,14 @@ npm run dev
 - no modificar Build Command / Output Directory salvo necesidad real
 
 ## Variables de entorno
-Copiar `.env.example` a `.env.local`
+Copiar `.env.example` a `.env.local`.
+
+Variables comerciales centralizadas en `src/lib/site.ts`:
+- `NEXT_PUBLIC_WHATSAPP_NUMBER`: número para links `wa.me` (solo dígitos con código país).
+- `NEXT_PUBLIC_PHONE_DISPLAY`: número formateado para mostrar en UI.
+- `NEXT_PUBLIC_CONTACT_EMAIL`: email comercial.
+- `NEXT_PUBLIC_COVERAGE_CITY`: texto corto de cobertura principal.
+- `WHATSAPP_NUMBER`: override server-side para API de reservas (opcional).
 
 ## Flujo de trabajo
 - crear branch `patch/xx-nombre`
