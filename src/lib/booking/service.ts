@@ -97,15 +97,42 @@ export async function getAvailabilityByDate(date: string): Promise<AvailabilityS
   });
 }
 
+const NAME_REGEX = /^[a-záéíóúüñ\s'.-]+$/i;
+const PHONE_REGEX = /^\+?[\d\s()-]+$/;
+const ADDRESS_REGEX = /^[a-záéíóúüñ\d\s.,#°/-]+$/i;
+const NEIGHBORHOOD_REGEX = /^[a-záéíóúüñ\d\s'.-]+$/i;
+
 function validateCreateBookingInput(input: CreateBookingInput): string | null {
-  if (
-    !input.fullName.trim() ||
-    !input.phone.trim() ||
-    !input.address.trim() ||
-    !input.neighborhood.trim() ||
-    !input.details.trim()
-  ) {
-    return "Faltan campos obligatorios.";
+  const fullName = input.fullName.trim();
+  const phone = input.phone.trim();
+  const serviceType = input.serviceType.trim();
+  const address = input.address.trim();
+  const neighborhood = input.neighborhood.trim();
+  const details = input.details.trim();
+
+  if (!fullName) {
+    return "Ingresá tu nombre completo.";
+  }
+
+  if (fullName.length < 3 || !NAME_REGEX.test(fullName)) {
+    return "Ingresá un nombre válido para continuar.";
+  }
+
+  if (!phone) {
+    return "Ingresá un teléfono de contacto.";
+  }
+
+  if (!PHONE_REGEX.test(phone)) {
+    return "El teléfono ingresado no tiene un formato válido.";
+  }
+
+  const phoneDigits = phone.replace(/\D/g, "");
+  if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+    return "El teléfono debe tener entre 8 y 15 dígitos.";
+  }
+
+  if (!serviceType) {
+    return "Debés seleccionar un tipo de servicio.";
   }
 
   if (!isValidDateInput(input.preferredDate)) {
@@ -113,11 +140,27 @@ function validateCreateBookingInput(input: CreateBookingInput): string | null {
   }
 
   if (!isTimeWithinAgenda(input.preferredTime)) {
-    return "La hora debe estar entre 08:00 y 21:00.";
+    return "La hora elegida está fuera del rango operativo (08:00 a 21:00).";
   }
 
-  if (!input.serviceType.trim()) {
-    return "Debés seleccionar un tipo de servicio.";
+  if (!address) {
+    return "Ingresá la dirección del domicilio.";
+  }
+
+  if (address.length < 6 || !ADDRESS_REGEX.test(address)) {
+    return "Ingresá una dirección válida (calle y altura).";
+  }
+
+  if (!neighborhood) {
+    return "Indicá tu barrio o zona.";
+  }
+
+  if (neighborhood.length < 3 || !NEIGHBORHOOD_REGEX.test(neighborhood)) {
+    return "Ingresá un barrio o zona válido.";
+  }
+
+  if (!details || details.length < 10) {
+    return "Contanos más detalles del trabajo para evaluar tu solicitud.";
   }
 
   const now = new Date();
