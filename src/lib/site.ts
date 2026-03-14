@@ -15,10 +15,10 @@ export const navItems: NavItem[] = [
 
 export const businessInfo: BusinessInfo = {
   brand: "Armamos lo que quieras",
-  tagline: "Armado e instalación de muebles a domicilio en CABA y GBA",
+  tagline: "Agenda automática por WhatsApp para ordenar cada trabajo",
   description:
-    "Resolvemos armado, instalación y ajustes de muebles para hogares y oficinas con visita coordinada y atención por WhatsApp.",
-  primaryCtaLabel: "Agendar por WhatsApp",
+    "Tomamos solicitudes por WhatsApp, pedimos todos los datos clave y dejamos cada visita lista para coordinar sin idas y vueltas.",
+  primaryCtaLabel: "Abrir agenda",
   primaryCtaHref: "/agenda",
   contact: {
     phoneDisplay: configuredPhoneDisplay || "+54 9 11 5234-8796",
@@ -54,7 +54,7 @@ export const quickAccessItems = [
   },
   {
     title: "Agenda",
-    description: "Elegí fecha y horario operativo para tu visita.",
+    description: "Completá tu pedido y proponé horario desde una agenda guiada.",
     href: "/agenda",
   },
   {
