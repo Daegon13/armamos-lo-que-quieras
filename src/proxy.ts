@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "demo-admin";
-const ADMIN_COOKIE = "admin_session";
+import { ADMIN_COOKIE_NAME, ADMIN_SESSION_TOKEN } from "@/lib/adminAuth";
 
 function isProtectedPath(pathname: string) {
   return pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!isProtectedPath(pathname)) {
@@ -18,7 +16,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const isAuthenticated = request.cookies.get(ADMIN_COOKIE)?.value === ADMIN_PASSWORD;
+  const isAuthenticated = request.cookies.get(ADMIN_COOKIE_NAME)?.value === ADMIN_SESSION_TOKEN;
 
   if (isAuthenticated) {
     return NextResponse.next();

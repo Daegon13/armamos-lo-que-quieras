@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ADMIN_COOKIE_NAME, isValidAdminPassword } from "@/lib/adminAuth";
+import { ADMIN_COOKIE_NAME, ADMIN_SESSION_TOKEN, isValidAdminPassword } from "@/lib/adminAuth";
 
 export async function POST(request: Request) {
   const payload = (await request.json()) as { password?: string };
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   const response = NextResponse.json({ ok: true });
   response.cookies.set({
     name: ADMIN_COOKIE_NAME,
-    value: password,
+    value: ADMIN_SESSION_TOKEN,
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
