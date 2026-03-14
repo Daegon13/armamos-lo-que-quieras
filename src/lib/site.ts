@@ -1,6 +1,9 @@
 import type { BusinessInfo, NavItem } from "@/types/site";
 
 const configuredWhatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+const configuredPhoneDisplay = process.env.NEXT_PUBLIC_PHONE_DISPLAY;
+const configuredContactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
+const configuredCoverageCity = process.env.NEXT_PUBLIC_COVERAGE_CITY;
 
 export const navItems: NavItem[] = [
   { label: "Inicio", href: "/" },
@@ -18,11 +21,11 @@ export const businessInfo: BusinessInfo = {
   primaryCtaLabel: "Agendar por WhatsApp",
   primaryCtaHref: "/agenda",
   contact: {
-    phoneDisplay: "+54 9 11 0000-0000",
-    whatsappNumber: configuredWhatsappNumber || "5491100000000",
+    phoneDisplay: configuredPhoneDisplay || "+54 9 11 5234-8796",
+    whatsappNumber: configuredWhatsappNumber || "5491152348796",
     whatsappDefaultMessage: "Hola, quiero coordinar un servicio de armado de muebles.",
-    email: "hola@armamosloquequieras.com",
-    city: "CABA y GBA",
+    email: configuredContactEmail || "hola@armamosloquequieras.com",
+    city: configuredCoverageCity || "CABA y GBA",
   },
   operationalHours: [
     { days: "Lunes a viernes", hours: "08:00 a 21:00" },
@@ -41,7 +44,7 @@ export const businessInfo: BusinessInfo = {
 const whatsappBaseUrl = `https://wa.me/${businessInfo.contact.whatsappNumber}`;
 const whatsappText = encodeURIComponent(businessInfo.contact.whatsappDefaultMessage);
 
-export const whatsappPlaceholderHref = `${whatsappBaseUrl}?text=${whatsappText}`;
+export const whatsappContactHref = `${whatsappBaseUrl}?text=${whatsappText}`;
 
 export const quickAccessItems = [
   {

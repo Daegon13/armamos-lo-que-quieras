@@ -1,9 +1,9 @@
-import { businessInfo, whatsappPlaceholderHref } from "@/lib/site";
+import { businessInfo, whatsappContactHref } from "@/lib/site";
 
 export function WhatsAppFloatingButton() {
   return (
     <a
-      href={whatsappPlaceholderHref}
+      href={whatsappContactHref}
       aria-label="Iniciar conversación por WhatsApp"
       className="fixed right-4 bottom-4 z-50 inline-flex h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 text-white shadow-lg shadow-emerald-500/30 transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 sm:h-12 sm:min-w-12 sm:px-3"
       title={`WhatsApp ${businessInfo.contact.phoneDisplay}`}

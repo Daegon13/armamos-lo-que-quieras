@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { businessInfo, whatsappPlaceholderHref } from "@/lib/site";
+import { businessInfo, whatsappContactHref } from "@/lib/site";
 
 export default function ContactoPage() {
   return (
@@ -17,7 +17,7 @@ export default function ContactoPage() {
               <p className="text-sm font-medium text-slate-500">WhatsApp</p>
               <p className="mt-1 text-base font-semibold text-slate-900">{businessInfo.contact.phoneDisplay}</p>
               <Link
-                href={whatsappPlaceholderHref}
+                href={whatsappContactHref}
                 className="mt-3 inline-flex rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
               >
                 Escribir ahora
