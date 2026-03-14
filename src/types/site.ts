@@ -8,6 +8,12 @@ export type ContactInfo = {
   whatsappNumber: string;
   email: string;
   city: string;
+  whatsappDefaultMessage: string;
+};
+
+export type OperationalHours = {
+  days: string;
+  hours: string;
 };
 
 export type BusinessInfo = {
@@ -17,4 +23,7 @@ export type BusinessInfo = {
   primaryCtaLabel: string;
   primaryCtaHref: string;
   contact: ContactInfo;
+  operationalHours: OperationalHours[];
+  serviceHighlights: string[];
+  coverageZones: string[];
 };

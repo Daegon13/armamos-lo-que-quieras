@@ -5,7 +5,7 @@ export function HeroSection() {
   return (
     <section className="border-b border-slate-200 bg-slate-50">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Servicio profesional</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{businessInfo.tagline}</p>
         <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
           {businessInfo.brand}
         </h1>

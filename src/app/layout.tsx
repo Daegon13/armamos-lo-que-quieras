@@ -12,13 +12,11 @@ export const metadata: Metadata = {
     default: businessInfo.brand,
     template: `%s | ${businessInfo.brand}`,
   },
-  description:
-    "Servicio profesional de armado de muebles para hogar y oficina. Base comercial lista para iterar.",
+  description: businessInfo.description,
   metadataBase: new URL(siteUrl),
   openGraph: {
     title: businessInfo.brand,
-    description:
-      "Servicio profesional de armado de muebles para hogar y oficina. Atención confiable y comercial.",
+    description: businessInfo.description,
     url: siteUrl,
     siteName: businessInfo.brand,
     locale: "es_AR",
