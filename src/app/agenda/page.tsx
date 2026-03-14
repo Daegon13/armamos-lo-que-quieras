@@ -61,6 +61,16 @@ const NAME_REGEX = /^[a-záéíóúüñ\s'.-]+$/i;
 const PHONE_REGEX = /^\+?[\d\s()-]+$/;
 const ADDRESS_REGEX = /^[a-záéíóúüñ\d\s.,#°/-]+$/i;
 const NEIGHBORHOOD_REGEX = /^[a-záéíóúüñ\d\s'.-]+$/i;
+const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+function isTimeWithinOperationalRange(time: string): boolean {
+  if (!TIME_REGEX.test(time)) {
+    return false;
+  }
+
+  const [hours, minutes] = time.split(":").map(Number);
+  return minutes === 0 && hours >= 8 && hours <= 21;
+}
 
 function isValidDateValue(value: string): boolean {
   const parsed = new Date(`${value}T00:00:00`);
@@ -120,6 +130,8 @@ function validateForm(values: FormValues): FormErrors {
 
   if (!values.preferredTime) {
     errors.preferredTime = "Elegí un horario dentro del rango operativo disponible.";
+  } else if (!isTimeWithinOperationalRange(values.preferredTime)) {
+    errors.preferredTime = "Seleccioná un horario válido entre las 08:00 y las 21:00.";
   }
 
   if (!address) {
@@ -156,12 +168,22 @@ export default function AgendaPage() {
   const [serviceOptions, setServiceOptions] = useState<string[]>([...FALLBACK_SERVICE_OPTIONS]);
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
-  const minDate = useMemo(() => getTodayDate(), []);
+  const [minDate, setMinDate] = useState(() => getTodayDate());
 
   const { isLoading, slots, error: availabilityError } = useAgendaAvailability(formValues.preferredDate);
 
   const availableSlots = useMemo(() => slots.filter((slot) => slot.available), [slots]);
   const hasSelectedDate = Boolean(formValues.preferredDate);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setMinDate(getTodayDate());
+    }, 60_000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -366,7 +388,7 @@ export default function AgendaPage() {
 
               {hasSelectedDate && isLoading && (
                 <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600">
-                  Consultando disponibilidad del horario reservado provisoriamente...
+                  Consultando disponibilidad de horarios...
                 </p>
               )}
 
