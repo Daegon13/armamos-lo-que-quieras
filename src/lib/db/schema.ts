@@ -30,7 +30,7 @@ export type DbBookingRow = {
   details: string;
   date: string;
   time: string;
-  status: "pending" | "confirmed" | "blocked" | "expired";
+  status: "pending" | "confirmed" | "blocked" | "cancelled" | "expired";
   hold_until: string | null;
   created_at: string;
 };

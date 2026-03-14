@@ -33,6 +33,9 @@ function createMemoryStore(): BookingStore {
     async findServiceByName(name: string) {
       return getMemoryState().services.find((service) => service.name === name && service.isActive);
     },
+    async findServiceById(id: string) {
+      return getMemoryState().services.find((service) => service.id === id);
+    },
     async listBookingsByDate(date: string) {
       return getMemoryState().bookings.filter((booking) => booking.date === date);
     },
@@ -83,6 +86,32 @@ function createMemoryStore(): BookingStore {
       getMemoryState().bookings.push(booking);
 
       return booking;
+    },
+    async updateBookingStatus(bookingId, status) {
+      const booking = getMemoryState().bookings.find((item) => item.id === bookingId);
+
+      if (!booking) {
+        return null;
+      }
+
+      booking.status = status;
+
+      if (status !== "pending") {
+        booking.holdUntil = null;
+      }
+
+      return booking;
+    },
+    async createAdminBlock(input) {
+      const block: AdminBlock = {
+        id: randomUUID(),
+        date: input.date,
+        time: input.time,
+        reason: input.reason,
+      };
+
+      getMemoryState().adminBlocks.push(block);
+      return block;
     },
   };
 }
