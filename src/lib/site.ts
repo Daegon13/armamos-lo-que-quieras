@@ -48,14 +48,14 @@ export const whatsappContactHref = `${whatsappBaseUrl}?text=${whatsappText}`;
 
 export const quickAccessItems = [
   {
-    title: "Servicios",
-    description: "Conocé los servicios reales que cubrimos en domicilio.",
-    href: "/servicios",
-  },
-  {
     title: "Agenda",
     description: "Completá tu pedido y proponé horario desde una agenda guiada.",
     href: "/agenda",
+  },
+  {
+    title: "Servicios",
+    description: "Conocé los servicios reales que cubrimos en domicilio.",
+    href: "/servicios",
   },
   {
     title: "Cobertura",

@@ -21,10 +21,10 @@ export function HeroSection() {
             {businessInfo.primaryCtaLabel}
           </Link>
           <Link
-            href="/servicios"
+            href="/#como-funciona-agenda"
             className="inline-flex items-center justify-center rounded-md border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-white"
           >
-            Ver servicios
+            Cómo funciona la agenda
           </Link>
         </div>
       </div>

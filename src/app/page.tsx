@@ -38,7 +38,7 @@ export default function Home() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-slate-200 bg-slate-50 p-5 transition-colors hover:border-slate-300"
+              className={`rounded-xl border p-5 transition-colors ${item.href === "/agenda" ? "border-slate-900 bg-white shadow-sm" : "border-slate-200 bg-slate-50 hover:border-slate-300"}`}
             >
               <h2 className="text-base font-semibold text-slate-900">{item.title}</h2>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
@@ -67,7 +67,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white">
+      <section id="como-funciona-agenda" className="bg-white">
         <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.4fr_1fr] lg:px-8">
           <article className="rounded-xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Cómo funciona la agenda</p>
