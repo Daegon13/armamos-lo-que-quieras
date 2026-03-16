@@ -29,7 +29,7 @@ export const businessInfo: BusinessInfo = {
   },
   operationalHours: [
     { days: "Lunes a viernes", hours: "08:00 a 21:00" },
-    { days: "Sábados", hours: "09:00 a 18:00" },
+    { days: "Sábados", hours: "08:00 a 21:00" },
   ],
   serviceHighlights: [
     "Armado de muebles en caja",
