@@ -3,32 +3,32 @@ import { businessInfo } from "@/lib/site";
 
 const serviceCatalog = [
   {
-    name: "Consulta clínica general a domicilio",
+    name: "Armado de muebles en caja",
+    duration: "90 min",
+    buffer: "20 min",
+    price: "$28.000",
+    description: "Armado completo con ajuste final para asegurar estabilidad y terminación prolija.",
+  },
+  {
+    name: "Instalación de estantes y soportes",
+    duration: "60 min",
+    buffer: "15 min",
+    price: "$21.000",
+    description: "Colocación nivelada y fijación segura en pared para uso diario en hogar u oficina.",
+  },
+  {
+    name: "Desarme y rearmado por mudanza",
+    duration: "120 min",
+    buffer: "30 min",
+    price: "$36.000",
+    description: "Desarme ordenado, traslado interno y rearmado para mantener estructura y funcionamiento.",
+  },
+  {
+    name: "Corrección y ajuste de armado",
     duration: "45 min",
     buffer: "15 min",
-    price: "$24.900",
-    description: "Chequeo integral, evaluación de síntomas y plan inicial de cuidados.",
-  },
-  {
-    name: "Control preventivo y vacunación",
-    duration: "30 min",
-    buffer: "15 min",
-    price: "$19.500",
-    description: "Revisión por etapa, calendario sanitario y aplicación de vacunas indicadas.",
-  },
-  {
-    name: "Curaciones y seguimiento postoperatorio",
-    duration: "40 min",
-    buffer: "20 min",
-    price: "$22.000",
-    description: "Control de evolución, limpieza de heridas y recomendaciones para recuperación segura.",
-  },
-  {
-    name: "Asesoría nutricional y bienestar",
-    duration: "35 min",
-    buffer: "15 min",
-    price: "$18.700",
-    description: "Plan de alimentación adaptado a edad, condición corporal y rutina diaria.",
+    price: "$18.500",
+    description: "Revisión de errores de montaje, refuerzo de uniones y calibración de puertas o cajones.",
   },
 ] as const;
 
@@ -39,12 +39,11 @@ export default function ServiciosPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Servicios</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-            Atención veterinaria profesional, clara y a tiempo
+            Soluciones de armado confiables para tu casa u oficina
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            En VetCare coordinamos cada visita para que tengas respuesta rápida, seguimiento responsable y un servicio
-            confiable en {businessInfo.contact.city}. Trabajamos con turnos organizados para cuidar la experiencia de tu
-            mascota y de tu familia.
+            En {businessInfo.brand} coordinamos cada visita con puntualidad, trabajo prolijo y comunicación clara para que
+            resuelvas armado, instalación o ajustes sin complicaciones en {businessInfo.contact.city}.
           </p>
 
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -57,9 +56,9 @@ export default function ServiciosPage() {
         </div>
 
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-900">Servicios y tiempos de atención</h2>
+          <h2 className="text-xl font-semibold text-slate-900">Duración estimada y valores orientativos</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Duración estimada por visita, tiempo de preparación entre turnos y valor orientativo por servicio.
+            Referencia de tiempos por trabajo, margen entre visitas y valor estimado para ayudarte a planificar.
           </p>
 
           <div className="mt-5 space-y-3">
@@ -81,16 +80,14 @@ export default function ServiciosPage() {
           </div>
 
           <p className="mt-4 text-xs text-slate-500 sm:text-sm">
-            Los valores son orientativos y pueden ajustarse según evaluación clínica, zona de cobertura y complejidad de
-            cada caso.
+            Valores orientativos sujetos a tipo de mueble, estado de la instalación y complejidad del trabajo.
           </p>
         </section>
 
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-900">¿Listo para coordinar?</h2>
+          <h2 className="text-xl font-semibold text-slate-900">¿Listo para coordinar tu visita?</h2>
           <p className="mt-2 text-sm text-slate-600 sm:text-base">
-            Elegí el servicio que necesitás y reservá tu turno en minutos. Si preferís, también podés escribirnos para
-            ayudarte a definir la mejor opción para tu mascota.
+            Reservá tu turno en minutos desde la agenda. Si necesitás asesoramiento previo, te ayudamos por WhatsApp.
           </p>
 
           <div className="mt-5 flex flex-wrap gap-3">
@@ -104,7 +101,7 @@ export default function ServiciosPage() {
               href="/contacto"
               className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
             >
-              Hablar con VetCare
+              Contactar por WhatsApp
             </Link>
           </div>
         </section>
